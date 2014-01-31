@@ -41,19 +41,26 @@ public interface CalendarInterface {
    boolean hasPermissions();
    
    /**
-    * Query device for available calendars and returns their names. We can then use these names in openCalendar() method.
-    * @return List of calendar names in CSV format
+    * Query device and return number of available calendars.
+    * @return Number of available calendars
     * 
     */
-   String getCalendarNames();
+   int getCalendarCount();
+   
+   /**
+    * @param offset - offset into available calendar list 
+    * @return - Name of the calendar at the offset. Null if there is no calendar at this offset.
+    */
+   String getCalendarName(int offset);
 
    /**
     * Opens the named calendar creating it if necessary.
     *
     * @param calendarName - Name of calendar to be opened/created
+    * @param createIfNotExists - Indicates if a calendar must be created if there is no calendar found by the name provided
     * @return Unique ID to be used in other methods referencing this calendar. Null in case of failure
     */
-   String openCalendar(String calendarName);
+   String openCalendar(String calendarName, boolean createIfNotExists);
 
    /**
     * Add/Edit an event in named calendar
