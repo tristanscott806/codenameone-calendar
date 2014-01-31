@@ -61,13 +61,17 @@ public class DeviceCalendar implements CalendarInterface {
    }
 
    public boolean removeEvent(String calendarID, String eventID) {
-      if (eventID == null || eventID.isEmpty())
-         throw new IllegalArgumentException("eventID required");
-      
-      return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(calendarID, eventID);
+	   if (calendarID == null || calendarID.isEmpty())
+		   throw new IllegalArgumentException("calendarID required");
+	   if (eventID == null || eventID.isEmpty())
+		   throw new IllegalArgumentException("eventID required");
+
+	   return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(calendarID, eventID);
    }
 
    public String getEventByID(String calendarID, String eventID) {
+	   if (calendarID == null || calendarID.isEmpty())
+		   throw new IllegalArgumentException("calendarID required");
       if (eventID == null || eventID.isEmpty())
          throw new IllegalArgumentException("eventID required");
 
