@@ -23,11 +23,66 @@
 
 package com.codename1.calendar;
 
+import com.codename1.calendar.impl.CalendarNativeInterface;
+import com.codename1.system.NativeInterface;
+import com.codename1.system.NativeLookup;
+
 /**
  * This class will represent the user visible portable API
  *
  * @author Shai Almog
  */
-public class DeviceCalendar {
+public class DeviceCalendar implements CalendarInterface {
 
+   public boolean hasPermissions() {
+      NativeInterface impl = NativeLookup.create(CalendarNativeInterface.class);
+
+      return impl != null && impl.isSupported() && ((CalendarNativeInterface) impl).hasPermissions();
+   }
+
+   public String openCalendar(String calendarName) {
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).openCalendar(calendarName) : null;
+   }
+
+   public String saveEvent(String calendarID, String eventID, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, boolean taskOnly, String notes, String location, String reminders) {
+      if (calendarID == null || calendarID.isEmpty())
+         throw new IllegalArgumentException("calendarID required");
+      
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTimeStamp, endTimeStamp, allDayEvent, taskOnly, notes, location, reminders) : null;
+   }
+
+   public boolean removeEvent(String eventID) {
+      if (eventID == null || eventID.isEmpty())
+         throw new IllegalArgumentException("eventID required");
+      
+      return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(eventID);
+   }
+
+   public String getEventByIdentifier(String eventID) {
+      if (eventID == null || eventID.isEmpty())
+         throw new IllegalArgumentException("eventID required");
+
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByIdentifier(eventID) : null;
+   }
+
+   public String getEvents(String calendarID, long startTimeStamp, long endTimeStamp) {
+      if (calendarID == null || calendarID.isEmpty())
+         throw new IllegalArgumentException("calendarID required");
+
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEvents(calendarID, startTimeStamp, endTimeStamp) : null;
+   }
+
+   public void registerForEventNotifications() {
+      if (hasPermissions())
+         ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).registerForEventNotifications();
+   }
+
+   public void deregisterForEventNotifications() {
+      if (hasPermissions())
+         ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).deregisterForEventNotifications();
+   }
+
+  
+   
+   
 }

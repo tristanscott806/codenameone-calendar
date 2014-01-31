@@ -23,64 +23,15 @@
 
 package com.codename1.calendar.impl;
 
+import com.codename1.calendar.CalendarInterface;
 import com.codename1.system.NativeInterface;
 
 /**
- *
+ * Interface to calendar functions for Android & iOS
+ * 
  * @author Kapila de Lanerolle
+ * @author Andreas Heydler
  */
-public interface CalendarNativeInterface extends NativeInterface {
-	/**
-	 * @return If we have permissions for calendar modifications
-	 * @author kdelanerolle (Dec 11, 2013)
-	 */
-	boolean hasPermissions();
-	
-	/**
-	 * AddsEdits an event in default calendar
-	 * @param eventIdentifier - Event Identifier. Pass null for new Events
-	 * @param title - Title of the Calendar Event
-	 * @param startTimeStamp - Event starting timestamp (unix time)
-	 * @param endTimeStamp - Event ending timestamp (unix time)
-	 * @param allDayEvent - The event is an all day event
-	 * @param taskOnly - Task Only. No time associated with this.
-	 * @param notes - Any notes for the event
-	 * @param location - Location of the event
-	 * @param reminders - alarm offsets (in seconds) in CSV format. Pass null for no alarms
-	 * @return Unique event identifier for the event that's created. Null in the case of failure
-	 * @author kdelanerolle (Dec 10, 2013)
-	 */
-	String saveEvent(String eventIdentifier, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, boolean taskOnly, String notes, String location, String reminders);
-	
-	/**
-	 * Removes an event of given eventIdendifier from default calendar
-	 * @param eventIdentifier
-	 * @return If removal successful
-	 * @author kdelanerolle (Dec 11, 2013)
-	 */
-	boolean removeEvent(String eventIdentifier);
-	
-	/**
-	 * @param eventIdentifier - Event Identifier
-	 * @return XML String of event details. Null if not found.
-	 * @author kdelanerolle (Dec 13, 2013)
-	 */
-	String getEventByIdentifier(String eventIdentifier);
-	
-	/**
-	 * Returns all events in the calendar between startTimeStamp and endTimeStamp 
-	 * @param startTimeStamp
-	 * @param endTimeStamp
-	 * @return XML string of all events found
-	 * @author kdelanerolle (Dec 19, 2013)
-	 */
-	String getEvents(long startTimeStamp, long endTimeStamp);
-	
-	
-	/**
-	 * The following are for registering/deregistering for receiving callbacks when calendar events are modified 
-	 * @author kdelanerolle (Dec 19, 2013)
-	 */
-	void registerForEventNotifications();
-	void deregisterForEventNotifications();
+public interface CalendarNativeInterface extends CalendarInterface, NativeInterface {
+
 }
