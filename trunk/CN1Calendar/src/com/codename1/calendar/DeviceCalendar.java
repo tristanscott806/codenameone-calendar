@@ -35,18 +35,22 @@ import com.codename1.system.NativeLookup;
  */
 public class DeviceCalendar implements CalendarInterface {
 
-	public String getCalendarNames() {
-		return ((CalendarNativeInterface)NativeLookup.create(CalendarNativeInterface.class)).getCalendarNames();
-	}
-
    public boolean hasPermissions() {
       NativeInterface impl = NativeLookup.create(CalendarNativeInterface.class);
 
       return impl != null && impl.isSupported() && ((CalendarNativeInterface) impl).hasPermissions();
    }
 
-   public String openCalendar(String calendarName) {
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).openCalendar(calendarName) : null;
+   public int getCalendarCount() {
+	   return hasPermissions() ? ((CalendarNativeInterface)NativeLookup.create(CalendarNativeInterface.class)).getCalendarCount() : 0;
+   }
+   
+   public String getCalendarName(int offset) {
+	   return hasPermissions() ? ((CalendarNativeInterface)NativeLookup.create(CalendarNativeInterface.class)).getCalendarName(offset) : null;
+   }
+
+   public String openCalendar(String calendarName, boolean createIfNotExists) {
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).openCalendar(calendarName, createIfNotExists) : null;
    }
 
    public String saveEvent(String calendarID, String eventID, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, boolean taskOnly, String notes, String location, String reminders) {
@@ -86,6 +90,6 @@ public class DeviceCalendar implements CalendarInterface {
       if (hasPermissions())
          ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).deregisterForEventNotifications();
    }
+
   
-   
 }
