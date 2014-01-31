@@ -79,7 +79,7 @@ public interface CalendarInterface {
     * @param eventID - As returned from saveEvent
     * @return XML String of event details. Null if not found.
     */
-   String getEventByIdentifier(String eventID);
+   String getEventByID(String eventID);
 
    /**
     * Returns all events in the calendar between startTimeStamp and endTimeStamp
