@@ -39,6 +39,13 @@ public interface CalendarInterface {
     * @return If we have permissions for calendar modifications
     */
    boolean hasPermissions();
+   
+   /**
+    * Query device for available calendars and returns their names. We can then use these names in openCalendar() method.
+    * @return List of calendar names in CSV format
+    * 
+    */
+   String getCalendarNames();
 
    /**
     * Opens the named calendar creating it if necessary.
@@ -68,18 +75,20 @@ public interface CalendarInterface {
    /**
     * Removes event with previously returned eventID
     *
-    * @param eventID - As returned from saveEvent
+    * @param calendarID	- As returned from openCalendar
+    * @param eventID 	- As returned from saveEvent
     * @return If removal successful
     */
-   boolean removeEvent(String eventID);
+   boolean removeEvent(String calendarID, String eventID);
 
    /**
     * Query calendar and return details as XML string
     *
+    * @param calendarID	- As returned from openCalendar
     * @param eventID - As returned from saveEvent
     * @return XML String of event details. Null if not found.
     */
-   String getEventByID(String eventID);
+   String getEventByID(String calendarID, String eventID);
 
    /**
     * Returns all events in the calendar between startTimeStamp and endTimeStamp

@@ -31,8 +31,13 @@ import com.codename1.system.NativeLookup;
  * This class will represent the user visible portable API
  *
  * @author Shai Almog
+ * @author Kapila de Lanerolle
  */
 public class DeviceCalendar implements CalendarInterface {
+
+	public String getCalendarNames() {
+		return ((CalendarNativeInterface)NativeLookup.create(CalendarNativeInterface.class)).getCalendarNames();
+	}
 
    public boolean hasPermissions() {
       NativeInterface impl = NativeLookup.create(CalendarNativeInterface.class);
@@ -51,18 +56,18 @@ public class DeviceCalendar implements CalendarInterface {
       return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTimeStamp, endTimeStamp, allDayEvent, taskOnly, notes, location, reminders) : null;
    }
 
-   public boolean removeEvent(String eventID) {
+   public boolean removeEvent(String calendarID, String eventID) {
       if (eventID == null || eventID.isEmpty())
          throw new IllegalArgumentException("eventID required");
       
-      return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(eventID);
+      return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(calendarID, eventID);
    }
 
-   public String getEventByID(String eventID) {
+   public String getEventByID(String calendarID, String eventID) {
       if (eventID == null || eventID.isEmpty())
          throw new IllegalArgumentException("eventID required");
 
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByID(eventID) : null;
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByID(calendarID, eventID) : null;
    }
 
    public String getEvents(String calendarID, long startTimeStamp, long endTimeStamp) {
@@ -81,8 +86,6 @@ public class DeviceCalendar implements CalendarInterface {
       if (hasPermissions())
          ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).deregisterForEventNotifications();
    }
-
   
-   
    
 }
