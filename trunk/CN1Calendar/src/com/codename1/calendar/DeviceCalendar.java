@@ -58,11 +58,11 @@ public class DeviceCalendar implements CalendarInterface {
       return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(eventID);
    }
 
-   public String getEventByIdentifier(String eventID) {
+   public String getEventByID(String eventID) {
       if (eventID == null || eventID.isEmpty())
          throw new IllegalArgumentException("eventID required");
 
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByIdentifier(eventID) : null;
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByID(eventID) : null;
    }
 
    public String getEvents(String calendarID, long startTimeStamp, long endTimeStamp) {
