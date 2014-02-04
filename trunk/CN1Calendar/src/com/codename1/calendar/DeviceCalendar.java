@@ -32,6 +32,7 @@ import com.codename1.system.NativeLookup;
  *
  * @author Shai Almog
  * @author Kapila de Lanerolle
+ * @author Andreas Heydler
  */
 public class DeviceCalendar implements CalendarInterface {
 
