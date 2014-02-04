@@ -34,7 +34,17 @@ import com.codename1.system.NativeLookup;
  * @author Kapila de Lanerolle
  * @author Andreas Heydler
  */
-public class DeviceCalendar implements CalendarInterface {
+public final class DeviceCalendar implements CalendarInterface {
+   
+   private static final DeviceCalendar INSTANCE = new DeviceCalendar();
+   
+   public static DeviceCalendar getInstance() {
+      return INSTANCE;
+   }
+   
+   //
+   // user API
+   //
 
    public boolean hasPermissions() {
       NativeInterface impl = NativeLookup.create(CalendarNativeInterface.class);
