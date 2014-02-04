@@ -55,32 +55,32 @@ public class DeviceCalendar implements CalendarInterface {
    }
 
    public String saveEvent(String calendarID, String eventID, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, boolean taskOnly, String notes, String location, String reminders) {
-      if (calendarID == null || calendarID.isEmpty())
+      if (calendarID == null || 0 == calendarID.length())
          throw new IllegalArgumentException("calendarID required");
       
       return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTimeStamp, endTimeStamp, allDayEvent, taskOnly, notes, location, reminders) : null;
    }
 
    public boolean removeEvent(String calendarID, String eventID) {
-	   if (calendarID == null || calendarID.isEmpty())
+	   if (calendarID == null || 0 == calendarID.length())
 		   throw new IllegalArgumentException("calendarID required");
-	   if (eventID == null || eventID.isEmpty())
+	   if (eventID == null || 0 == eventID.length())
 		   throw new IllegalArgumentException("eventID required");
 
 	   return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(calendarID, eventID);
    }
 
    public String getEventByID(String calendarID, String eventID) {
-	   if (calendarID == null || calendarID.isEmpty())
+	   if (calendarID == null || 0 == calendarID.length())
 		   throw new IllegalArgumentException("calendarID required");
-      if (eventID == null || eventID.isEmpty())
+      if (eventID == null || 0 == eventID.length())
          throw new IllegalArgumentException("eventID required");
 
       return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByID(calendarID, eventID) : null;
    }
 
    public String getEvents(String calendarID, long startTimeStamp, long endTimeStamp) {
-      if (calendarID == null || calendarID.isEmpty())
+      if (calendarID == null || 0 == calendarID.length())
          throw new IllegalArgumentException("calendarID required");
 
       return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEvents(calendarID, startTimeStamp, endTimeStamp) : null;
