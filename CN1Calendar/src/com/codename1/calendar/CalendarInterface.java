@@ -42,6 +42,7 @@ public interface CalendarInterface {
    
    /**
     * Query device and return number of available calendars.
+    * 
     * @return Number of available calendars
     * 
     */
@@ -56,9 +57,9 @@ public interface CalendarInterface {
    /**
     * Opens the named calendar creating it if necessary.
     *
-    * @param calendarName - Name of calendar to be opened/created
+    * @param calendarName      - Name of calendar to be opened/created
     * @param createIfNotExists - Indicates if a calendar must be created if there is no calendar found by the name provided
-    * @return Unique ID to be used in other methods referencing this calendar. Null in case of failure
+    * @return Unique ID to be used in other methods referencing this calendar. Null in case of failure or calendar does not exist
     */
    String openCalendar(String calendarName, boolean createIfNotExists);
 
@@ -92,7 +93,7 @@ public interface CalendarInterface {
     * Query calendar and return details as XML string
     *
     * @param calendarID	- As returned from openCalendar
-    * @param eventID - As returned from saveEvent
+    * @param eventID    - As returned from saveEvent
     * @return XML String of event details. Null if not found.
     */
    String getEventByID(String calendarID, String eventID);
