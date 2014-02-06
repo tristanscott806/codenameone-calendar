@@ -247,7 +247,7 @@ public class AndroidCalendarImpl {
    private static String encodeEvents(Context ctx, Cursor cursor, String padding) {
       StringBuilder sb = new StringBuilder();
             
-      while (cursor.moveToNext()) {
+      while (cursor.moveToNext()) 
          sb.append(padding).append("<event>\n")
            .append(padding).append("  <id>").            append(cursor.getString(0)).append("</id>\n")
            .append(padding).append("  <title>").         append(cursor.getString(1)).append("</title>\n")
@@ -255,13 +255,11 @@ public class AndroidCalendarImpl {
            .append(padding).append("  <location>").      append(cursor.getString(3)).append("</location>\n")
            .append(padding).append("  <startTimeStamp>").append(cursor.getLong  (4)).append("</startTimeStamp>\n")
            .append(padding).append("  <endTimeStamp>").  append(cursor.getString(5)).append("</endTimeStamp>\n")
-           .append(padding).append("  <allDayEvent>").   append(cursor.getInt   (6) > 0 ? "true" : "false").append("</addDayEvent>\n")
+           .append(padding).append("  <allDayEvent>").   append(cursor.getInt   (6) > 0 ? "true" : "false").append("</allDayEvent>\n")
            .append(padding).append("  <reminders>\n")     
            .append(padding).append(     encodeReminders(ctx, cursor.getString(0), padding))
            .append(padding).append("  </reminders>\n")
            .append(padding).append("</event>\n");
-         
-      }
       
       return sb.toString();
    }
