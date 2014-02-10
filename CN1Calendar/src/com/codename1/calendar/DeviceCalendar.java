@@ -33,7 +33,6 @@ import java.util.Vector;
 
 import com.codename1.calendar.impl.CalendarNativeInterface;
 import com.codename1.io.CharArrayReader;
-import com.codename1.system.NativeInterface;
 import com.codename1.system.NativeLookup;
 import com.codename1.xml.Element;
 import com.codename1.xml.XMLParser;
@@ -45,139 +44,203 @@ import com.codename1.xml.XMLParser;
  * @author Kapila de Lanerolle
  * @author Andreas Heydler
  */
-public final class DeviceCalendar implements CalendarInterface {
-   
-   private static final CalendarInterface INSTANCE = new DeviceCalendar();
-   
-   public static CalendarInterface getInstance() {
-      return INSTANCE;
-   }
-   
-   //
-   // user API
-   //
+public final class DeviceCalendar{
 
-   public boolean hasPermissions() {
-      NativeInterface impl = NativeLookup.create(CalendarNativeInterface.class);
+	//Make DeviceCalendar a singleton
+	private static DeviceCalendar INSTANCE = null;
 
-      return impl != null && impl.isSupported() && ((CalendarNativeInterface) impl).hasPermissions();
-   }
+	//Native Interface Implementation
+	CalendarNativeInterface impl = null;
 
-   public Collection<String> getCalendars() {
-      if (hasPermissions()) {
-         CalendarNativeInterface impl = (CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class);
-         int cnt = impl.getCalendarCount();         
-         Collection<String> list = new LinkedList<String>();
-         
-         for (int i = 0; i < cnt; i++)
-            list.add(impl.getCalendarName(i));
-         
-         return list;         
-      }
-      
-      return null;
-   }
+	/**
+	 * DeviceCalendar can be use to manipulate device calendars.
+	 * @return	Instance of a DeviceCalendar implementation
+	 */
+	public static synchronized DeviceCalendar getInstance() {
+		//We need to limit instantiation to the supported platforms.
+		if(null == INSTANCE){
+			//Let's see if we have an implementation for the platform
+			CalendarNativeInterface impl = (CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class);
+			if(null != impl && impl.isSupported()){
+				INSTANCE = new DeviceCalendar(impl);
+			}
+		}
+		return INSTANCE;
+	}
+	
+	/**
+	 * @param impl	- Instance of NativeCalendarInterface implementation
+	 */
+	private DeviceCalendar(CalendarNativeInterface impl) {
+		if(null == impl){
+			//Shouldn't happen.
+			throw new IllegalArgumentException("NativeInterface is null!");
+		}
+	}
+	
+	/**
+	 * See if calendar interface available
+	 * 
+	 * @return true if calendar interface available & have permission to access
+	 */
+	public boolean hasPermissions() {
+		return impl.hasPermissions();
+	}
 
-   public String openCalendar(String calendarName, boolean createIfNotExists) {
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).openCalendar(calendarName, createIfNotExists) : null;
-   }
+	/**
+	 * @return array of Strings of calendar names or null if no permissions
+	 */
+	public Collection<String> getCalendars() {
+		//Check if we have any calendars we can work with. If so, return a collection of their names.
+		int cnt = impl.getCalendarCount();
+		if(0 < cnt){
+			Collection<String> list = new LinkedList<String>();
 
-   public String saveEvent(String calendarID, String eventID, String title, Date startTime, Date endTime, boolean allDayEvent, String notes, String location, Collection<Integer> reminders) {
-      if (calendarID == null || calendarID.length() == 0)
-         throw new IllegalArgumentException("calendarID required");
-      
-      if (startTime == null)
-         throw new IllegalArgumentException("startTime cannot be null");
+			for (int i = 0; i < cnt; i++)
+				list.add(impl.getCalendarName(i));
 
-      if (endTime == null)
-         throw new IllegalArgumentException("endTime cannot be null");
-      
-      String sReminders;
-            
-      if (reminders != null && reminders.size() > 0) {
-         sReminders = "";
-         
-         for (int reminder : reminders)
-            sReminders += reminder + ",";
+			return list;         
+		}
 
-         sReminders = sReminders.substring(0, sReminders.length() - 1);
-      }
-      else
-         sReminders = null;
-      
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTime.getTime(), endTime.getTime(), allDayEvent, false, notes, location, sReminders) : null;
-   }
+		return null;
+	}
 
-   public boolean removeEvent(String calendarID, String eventID) {
-	   if (calendarID == null || calendarID.length() == 0)
-		   throw new IllegalArgumentException("calendarID required");
+	/**
+	 * Opens the named calendar creating it if necessary.
+	 *
+	 * @param calendarName      - Name of calendar to be opened/created. Pass null for default calendar on the device
+	 * @param createIfNotExists - Indicates if a calendar must be created if there is no calendar found by the name provided
+	 *                          
+	 * @return Unique ID to be used in other methods referencing this calendar. Null in case of failure or calendar does not exist
+	 */
+	public String openCalendar(String calendarName, boolean createIfNotExists) {
+		return impl.openCalendar(calendarName, createIfNotExists);
+	}
 
-	   if (eventID == null || eventID.length() == 0)
-		   throw new IllegalArgumentException("eventID required");
+	/**
+	 * Add/Edit an event in named calendar.
+	 *
+	 * @param calendarID     - As returned from openCalendar
+	 * @param eventID        - Event Identifier. Pass null for new Events
+	 * @param title          - Title of the Calendar Event
+	 * @param startTimeStamp - Event starting time stamp
+	 * @param endTimeStamp   - Event ending time stamp
+	 * @param allDayEvent    - The event is an all day event
+	 * @param notes          - Any notes for the event
+	 * @param location       - Location of the event
+	 * @param reminders      - alarm offsets (in seconds). Pass null for no alarms
+	 *                       
+	 * @return Unique event identifier for the event that's created. Null in the case of failure or no permissions
+	 */
+	public String saveEvent(	String calendarID, 
+								String eventID, 
+								String title,
+								Date startTimeStamp,
+								Date endTimeStamp,
+								boolean allDayEvent,
+								String notes,
+								String location,
+								Collection<Integer> reminders) {
+		
+		if (calendarID == null || calendarID.length() == 0)
+			throw new IllegalArgumentException("calendarID required");
 
-	   return hasPermissions() && ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).removeEvent(calendarID, eventID);
-   }
+		String sReminders = null;
+		if (reminders != null && reminders.size() > 0) {
+			sReminders = "";
 
-   public EventInfo getEventByID(String calendarID, String eventID) {
-	   if (calendarID == null || calendarID.length() == 0)
-		   throw new IllegalArgumentException("calendarID required");
+			for (int reminder : reminders)
+				sReminders += reminder + ",";
 
-      if (eventID == null || eventID.length() == 0)
-         throw new IllegalArgumentException("eventID required");
+			sReminders = sReminders.substring(0, sReminders.length() - 1);
+		}
 
-      if (hasPermissions()) {
-         String      xml = ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEventByID(calendarID, eventID);
-         Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
-         
-//         Log.p("event XML " + xml);
-//         Log.p("parsed " + element);
-         
-         return new EventInfo(findElement(element, "response", "event"));         
-      }
-      
-      return null;
-   }
+		return impl.saveEvent(calendarID, eventID, title, startTimeStamp.getTime(), endTimeStamp.getTime(), allDayEvent, false, notes, location, sReminders);
+	}
 
-   public Collection<EventInfo> getEvents(String calendarID, Date startTime, Date endTime) {
-      if (calendarID == null || calendarID.length() == 0)
-         throw new IllegalArgumentException("calendarID required");
-      
-      if (startTime == null)
-         throw new IllegalArgumentException("startTime cannot be null");
+	/**
+	 * Removes event with previously returned eventID
+	 *
+	 * @param calendarID	- As returned from openCalendar
+	 * @param eventID 	- As returned from saveEvent
+	 *                   
+	 * @return If removal successful
+	 */   
+	public boolean removeEvent(String calendarID, String eventID) {
+		if (calendarID == null || calendarID.length() == 0)
+			throw new IllegalArgumentException("calendarID required");
 
-      if (endTime == null)
-         throw new IllegalArgumentException("endTime cannot be null");
+		if (eventID == null || eventID.length() == 0)
+			throw new IllegalArgumentException("eventID required");
 
-      if (hasPermissions()) {
-         String      xml = ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEvents(calendarID, startTime.getTime(), endTime.getTime());
-         Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
+		return impl.removeEvent(calendarID, eventID);
+	}
 
-//         Log.p("events XML " + xml);
-//         Log.p("parsed " + element);
-         
-         element = findElement(element, "response", "eventList"); 
-         Collection<EventInfo> col = new ArrayList<EventInfo>();         
-         
-         if (element != null) {
-            Vector<Element> events = element.getChildrenByTagName("event");
-            
-            if (events != null) {
-               Enumeration<Element> enumeration = events.elements();
-               
-               while (enumeration.hasMoreElements())
-                  col.add(new EventInfo(enumeration.nextElement()));
-            }
-//            else
-//               Log.p("no events");
-         }
-//         else
-//            Log.p("no eventList");
-            
-         return col;         
-      }
-      
-      return null;
-   }
+
+	/**
+	 * Query calendar and return details as an EventInfo
+	 *
+	 * @param calendarID	- As returned from openCalendar
+	 * @param eventID    - As returned from saveEvent
+	 *                   
+	 * @return an EventInfo or null on failure, not found or no permissions.
+	 */
+	public EventInfo getEventByID(String calendarID, String eventID) {
+		if (calendarID == null || calendarID.length() == 0)
+			throw new IllegalArgumentException("calendarID required");
+
+		if (eventID == null || eventID.length() == 0)
+			throw new IllegalArgumentException("eventID required");
+
+		String      xml = impl.getEventByID(calendarID, eventID);
+		if(null != xml){
+			Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
+			//         Log.p("event XML " + xml);
+			//         Log.p("parsed " + element);
+			return new EventInfo(findElement(element, "response", "event"));         
+		}
+		return null;
+	}
+
+	/**
+	 * Returns all events in the calendar between startTimeStamp and endTimeStamp
+	 *
+	 * @param calendarID     - As returned from openCalendar
+	 * @param startTimeStamp - Event search starting time stamp                       
+	 * @param endTimeStamp   - Event search ending time stamp
+	 *                       
+	 * @return collection of EventInfo's. Returns null in case of failure or no permissions
+	 */
+	public Collection<EventInfo> getEvents(String calendarID, Date startTimeStamp, Date endTimeStamp) {
+		if (calendarID == null || calendarID.length() == 0)
+			throw new IllegalArgumentException("calendarID required");
+
+		String      xml = impl.getEvents(calendarID, startTimeStamp.getTime(), endTimeStamp.getTime());
+		if(null != xml){
+			Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
+
+			//         Log.p("events XML " + xml);
+			//         Log.p("parsed " + element);
+
+			element = findElement(element, "response", "eventList"); 
+			Collection<EventInfo> col = new ArrayList<EventInfo>();         
+
+			if (element != null) {
+				Vector<Element> events = element.getChildrenByTagName("event");
+
+				if (events != null) {
+					Enumeration<Element> enumeration = events.elements();
+
+					while (enumeration.hasMoreElements())
+						col.add(new EventInfo(enumeration.nextElement()));
+				}
+			}
+
+			return col;         
+		}
+
+		return null;
+	}
    
    private static Element findElement(Element element, String... tags) {
       if (element != null) {
@@ -206,87 +269,89 @@ public final class DeviceCalendar implements CalendarInterface {
 
   
    public static class EventInfo {
-      private final String  id;    
-      private final String  title;    
-      private final String  description;    
-      private final String  location;
-      private final long    startTimeStamp;
-      private final long    endTimeStamp;
-      private final boolean allDayEvent;
-      private final int[]   reminders;
+	   private final String  id;    
+	   private final String  title;    
+	   private final String  description;    
+	   private final String  location;
+	   private final long    startTimeStamp;
+	   private final long    endTimeStamp;
+	   private final boolean allDayEvent;
+	   private final int[]   reminders;
 
-      public EventInfo(Element element) {
-//         Log.p("EventInfo(" + element + ")");
-         
-         if (element == null)
-            throw new IllegalArgumentException("element cannot be null");
-         
-         id             = element.getFirstChildByTagName("id").         getChildAt(0).getText();
-         title          = element.getFirstChildByTagName("title").      getChildAt(0).getText();
-         description    = element.getFirstChildByTagName("description").getChildAt(0).getText();
-         location       = element.getFirstChildByTagName("location").   getChildAt(0).getText();
-         startTimeStamp = Long.parseLong(element.getFirstChildByTagName("startTimeStamp").getChildAt(0).getText());
-         endTimeStamp   = Long.parseLong(element.getFirstChildByTagName("endTimeStamp").  getChildAt(0).getText());
-         allDayEvent    = "true".equals (element.getFirstChildByTagName("allDayEvent").   getChildAt(0).getText());
-         
-         Element rems = element.getFirstChildByTagName("reminders");
-         
-         if (rems != null && rems.getNumChildren() > 0) {
-            Vector<Element> seconds = rems.getChildrenByTagName("reminderOffset");
-            
-            reminders = new int[seconds != null ? seconds.size() : 0];
+	   public EventInfo(Element element) {
+		   //         Log.p("EventInfo(" + element + ")");
 
-            for (int i = 0; i < reminders.length; i++) 
-               reminders[i] = Integer.parseInt(seconds.elementAt(i).getChildAt(0).getText());            
-         }
-         else
-            reminders = new int[0];
-      }
+		   if (element == null)
+			   throw new IllegalArgumentException("element cannot be null");
 
-      public String getID() {
-         return id;
-      }
+		   id             = element.getFirstChildByTagName("id").         getChildAt(0).getText();
+		   title          = element.getFirstChildByTagName("title").      getChildAt(0).getText();
+		   description    = element.getFirstChildByTagName("description").getChildAt(0).getText();
+		   location       = element.getFirstChildByTagName("location").   getChildAt(0).getText();
+		   startTimeStamp = Long.parseLong(element.getFirstChildByTagName("startTimeStamp").getChildAt(0).getText());
+		   endTimeStamp   = Long.parseLong(element.getFirstChildByTagName("endTimeStamp").  getChildAt(0).getText());
+		   allDayEvent    = "true".equals (element.getFirstChildByTagName("allDayEvent").   getChildAt(0).getText());
 
-      public String getTitle() {
-         return title;
-      }
+		   Element rems = element.getFirstChildByTagName("reminders");
 
-      public String getDescription() {
-         return description;
-      }
+		   if (rems != null && rems.getNumChildren() > 0) {
+			   Vector<Element> seconds = rems.getChildrenByTagName("reminderOffset");
 
-      public String getLocation() {
-         return location;
-      }
+			   reminders = new int[seconds != null ? seconds.size() : 0];
 
-      public long getStartTimeStamp() {
-         return startTimeStamp;
-      }
+			   for (int i = 0; i < reminders.length; i++) 
+				   reminders[i] = Integer.parseInt(seconds.elementAt(i).getChildAt(0).getText());            
+		   }
+		   else
+			   reminders = new int[0];
+	   }
 
-      public long getEndTimeStamp() {
-         return endTimeStamp;
-      }
+	   public String getID() {
+		   return id;
+	   }
 
-      public boolean isAllDayEvent() {
-         return allDayEvent;
-      }
+	   public String getTitle() {
+		   return title;
+	   }
 
-      public int[] getReminders() {
-         return reminders;
-      }
+	   public String getDescription() {
+		   return description;
+	   }
 
-      @Override
-      public String toString() {
-         return "EventInfo{" +
-                  "id='"            + id             + '\'' +
-                ", title='"         + title          + '\'' +
-                ", description='"   + description    + '\'' +
-                ", location='"      + location       + '\'' +
-                ", startTimeStamp=" + startTimeStamp +
-                ", endTimeStamp="   + endTimeStamp   +
-                ", allDayEvent="    + allDayEvent    +
-                ", reminders="      + Arrays.toString(reminders) +
-                '}';
-      }
+	   public String getLocation() {
+		   return location;
+	   }
+
+	   public long getStartTimeStamp() {
+		   return startTimeStamp;
+	   }
+
+	   public long getEndTimeStamp() {
+		   return endTimeStamp;
+	   }
+
+	   public boolean isAllDayEvent() {
+		   return allDayEvent;
+	   }
+
+	   public int[] getReminders() {
+		   return reminders;
+	   }
+
+	   @Override
+	   public String toString() {
+		   return "EventInfo{" +
+				   "id='"            + id             + '\'' +
+				   ", title='"         + title          + '\'' +
+				   ", description='"   + description    + '\'' +
+				   ", location='"      + location       + '\'' +
+				   ", startTimeStamp=" + startTimeStamp +
+				   ", endTimeStamp="   + endTimeStamp   +
+				   ", allDayEvent="    + allDayEvent    +
+				   ", reminders="      + Arrays.toString(reminders) +
+				   '}';
+	   }
    }
+
+
 }
