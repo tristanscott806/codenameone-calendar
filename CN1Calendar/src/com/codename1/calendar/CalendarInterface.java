@@ -24,6 +24,7 @@
 package com.codename1.calendar;
 
 import java.util.Collection;
+import java.util.Date;
 
 /*
  * 
@@ -66,8 +67,8 @@ public interface CalendarInterface {
     * @param calendarID     - As returned from openCalendar
     * @param eventID        - Event Identifier. Pass null for new Events
     * @param title          - Title of the Calendar Event
-    * @param startTimeStamp - Event starting time stamp (unix time)
-    * @param endTimeStamp   - Event ending time stamp (unix time)
+    * @param startTime      - Event starting time stamp
+    * @param endTime        - Event ending time stamp
     * @param allDayEvent    - The event is an all day event
     * @param notes          - Any notes for the event
     * @param location       - Location of the event
@@ -75,7 +76,7 @@ public interface CalendarInterface {
     *                       
     * @return Unique event identifier for the event that's created. Null in the case of failure or no permissions
     */
-   String saveEvent(String calendarID, String eventID, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, String notes, String location, Collection<Integer> reminders);   
+   String saveEvent(String calendarID, String eventID, String title, Date startTime, Date endTime, boolean allDayEvent, String notes, String location, Collection<Integer> reminders);   
    
    /**
     * Removes event with previously returned eventID
@@ -101,11 +102,11 @@ public interface CalendarInterface {
     * Returns all events in the calendar between startTimeStamp and endTimeStamp
     *
     * @param calendarID     - As returned from openCalendar
-    * @param startTimeStamp - Event starting time stamp (unix time)                       
-    * @param endTimeStamp   - Event ending time stamp (unix time)
+    * @param startTime      - Event starting time stamp (unix time)                       
+    * @param endTime        - Event ending time stamp (unix time)
     *                       
     * @return collection of EventInfo's. Returns null in case of failure or no permissions
     */
-   Collection<DeviceCalendar.EventInfo> getEvents(String calendarID, long startTimeStamp, long endTimeStamp);   
+   Collection<DeviceCalendar.EventInfo> getEvents(String calendarID, Date startTime, Date endTime);   
    
 }
