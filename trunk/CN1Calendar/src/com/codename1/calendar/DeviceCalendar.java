@@ -146,7 +146,7 @@ public final class DeviceCalendar {
 
 		String sReminders = null;
       
-		if (reminders.size() > 0) {
+		if (reminders != null && reminders.size() > 0) {
 			sReminders = "";
 
 			for (int reminder : reminders)
