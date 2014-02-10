@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.CalendarContract;
 
-@TargetApi (Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class CalendarNativeInterfaceImpl {
    
    /**

@@ -24,7 +24,6 @@
 package com.codename1.calendar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -44,7 +43,7 @@ import com.codename1.xml.XMLParser;
  * @author Kapila de Lanerolle
  * @author Andreas Heydler
  */
-public final class DeviceCalendar{
+public final class DeviceCalendar {
 
 	//Make DeviceCalendar a singleton
 	private static DeviceCalendar INSTANCE = null;
@@ -133,21 +132,21 @@ public final class DeviceCalendar{
 	 *                       
 	 * @return Unique event identifier for the event that's created. Null in the case of failure or no permissions
 	 */
-	public String saveEvent(	String calendarID, 
-								String eventID, 
-								String title,
-								Date startTimeStamp,
-								Date endTimeStamp,
-								boolean allDayEvent,
-								String notes,
-								String location,
-								Collection<Integer> reminders) {
-		
+	public String saveEvent(String calendarID, 
+								   String eventID, 
+								   String title,
+								   Date startTimeStamp,
+								   Date endTimeStamp,
+								   boolean allDayEvent,
+								   String notes,
+								   String location,
+								   Collection<Integer> reminders) {		
 		if (calendarID == null || calendarID.length() == 0)
 			throw new IllegalArgumentException("calendarID required");
 
 		String sReminders = null;
-		if (reminders != null && reminders.size() > 0) {
+      
+		if (reminders.size() > 0) {
 			sReminders = "";
 
 			for (int reminder : reminders)
@@ -177,7 +176,6 @@ public final class DeviceCalendar{
 		return impl.removeEvent(calendarID, eventID);
 	}
 
-
 	/**
 	 * Query calendar and return details as an EventInfo
 	 *
@@ -193,13 +191,15 @@ public final class DeviceCalendar{
 		if (eventID == null || eventID.length() == 0)
 			throw new IllegalArgumentException("eventID required");
 
-		String      xml = impl.getEventByID(calendarID, eventID);
+		String xml = impl.getEventByID(calendarID, eventID);
+      
 		if(null != xml){
 			Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
-			//         Log.p("event XML " + xml);
-			//         Log.p("parsed " + element);
+//         Log.p("event XML " + xml);
+//         Log.p("parsed " + element);
 			return new EventInfo(findElement(element, "response", "event"));         
 		}
+      
 		return null;
 	}
 
@@ -216,12 +216,13 @@ public final class DeviceCalendar{
 		if (calendarID == null || calendarID.length() == 0)
 			throw new IllegalArgumentException("calendarID required");
 
-		String      xml = impl.getEvents(calendarID, startTimeStamp.getTime(), endTimeStamp.getTime());
+		String xml = impl.getEvents(calendarID, startTimeStamp.getTime(), endTimeStamp.getTime());
+      
 		if(null != xml){
 			Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
 
-			//         Log.p("events XML " + xml);
-			//         Log.p("parsed " + element);
+//         Log.p("events XML " + xml);
+//         Log.p("parsed " + element);
 
 			element = findElement(element, "response", "eventList"); 
 			Collection<EventInfo> col = new ArrayList<EventInfo>();         
@@ -267,92 +268,6 @@ public final class DeviceCalendar{
 //      if (hasPermissions())
 //         ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).deregisterForEventNotifications();
 //   }
-
-  
-   public static class EventInfo {
-	   private final String  id;    
-	   private final String  title;    
-	   private final String  description;    
-	   private final String  location;
-	   private final long    startTimeStamp;
-	   private final long    endTimeStamp;
-	   private final boolean allDayEvent;
-	   private final int[]   reminders;
-
-	   public EventInfo(Element element) {
-		   //         Log.p("EventInfo(" + element + ")");
-
-		   if (element == null)
-			   throw new IllegalArgumentException("element cannot be null");
-
-		   id             = element.getFirstChildByTagName("id").         getChildAt(0).getText();
-		   title          = element.getFirstChildByTagName("title").      getChildAt(0).getText();
-		   description    = element.getFirstChildByTagName("description").getChildAt(0).getText();
-		   location       = element.getFirstChildByTagName("location").   getChildAt(0).getText();
-		   startTimeStamp = Long.parseLong(element.getFirstChildByTagName("startTimeStamp").getChildAt(0).getText());
-		   endTimeStamp   = Long.parseLong(element.getFirstChildByTagName("endTimeStamp").  getChildAt(0).getText());
-		   allDayEvent    = "true".equals (element.getFirstChildByTagName("allDayEvent").   getChildAt(0).getText());
-
-		   Element rems = element.getFirstChildByTagName("reminders");
-
-		   if (rems != null && rems.getNumChildren() > 0) {
-			   Vector<Element> seconds = rems.getChildrenByTagName("reminderOffset");
-
-			   reminders = new int[seconds != null ? seconds.size() : 0];
-
-			   for (int i = 0; i < reminders.length; i++) 
-				   reminders[i] = Integer.parseInt(seconds.elementAt(i).getChildAt(0).getText());            
-		   }
-		   else
-			   reminders = new int[0];
-	   }
-
-	   public String getID() {
-		   return id;
-	   }
-
-	   public String getTitle() {
-		   return title;
-	   }
-
-	   public String getDescription() {
-		   return description;
-	   }
-
-	   public String getLocation() {
-		   return location;
-	   }
-
-	   public long getStartTimeStamp() {
-		   return startTimeStamp;
-	   }
-
-	   public long getEndTimeStamp() {
-		   return endTimeStamp;
-	   }
-
-	   public boolean isAllDayEvent() {
-		   return allDayEvent;
-	   }
-
-	   public int[] getReminders() {
-		   return reminders;
-	   }
-
-	   @Override
-	   public String toString() {
-		   return "EventInfo{" +
-				   "id='"            + id             + '\'' +
-				   ", title='"         + title          + '\'' +
-				   ", description='"   + description    + '\'' +
-				   ", location='"      + location       + '\'' +
-				   ", startTimeStamp=" + startTimeStamp +
-				   ", endTimeStamp="   + endTimeStamp   +
-				   ", allDayEvent="    + allDayEvent    +
-				   ", reminders="      + Arrays.toString(reminders) +
-				   '}';
-	   }
-   }
 
 
 }
