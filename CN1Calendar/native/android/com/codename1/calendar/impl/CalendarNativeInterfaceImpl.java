@@ -49,8 +49,8 @@ public class CalendarNativeInterfaceImpl {
     * @param calendarID     - As returned from openCalendar
     * @param eventID        - Event Identifier. Pass null for new Events
     * @param title          - Title of the Calendar Event
-    * @param startTimeStamp - Event starting time stamp (unix time)
-    * @param endTimeStamp   - Event ending time stamp (unix time)
+    * @param startTimeStamp - Event starting time stamp 
+    * @param endTimeStamp   - Event ending time stamp 
     * @param allDayEvent    - The event is an all day event
     * @param taskOnly       - Task Only. No time associated with this.
     * @param notes          - Any notes for the event
@@ -108,7 +108,7 @@ public class CalendarNativeInterfaceImpl {
    }
    
    public boolean isSupported() {
-      return true;
+      return android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
    }
 
 }
