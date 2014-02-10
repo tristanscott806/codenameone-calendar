@@ -50,7 +50,7 @@ public final class DeviceCalendar{
 	private static DeviceCalendar INSTANCE = null;
 
 	//Native Interface Implementation
-	CalendarNativeInterface impl = null;
+	private CalendarNativeInterface impl = null;
 
 	/**
 	 * DeviceCalendar can be use to manipulate device calendars.
@@ -76,6 +76,7 @@ public final class DeviceCalendar{
 			//Shouldn't happen.
 			throw new IllegalArgumentException("NativeInterface is null!");
 		}
+		this.impl = impl;
 	}
 	
 	/**
