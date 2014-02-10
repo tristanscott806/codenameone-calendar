@@ -12,6 +12,12 @@
  * @date    1 Feb 2014
  */
 -(NSString*)getCalendarName:(int)offset{
+
+    //Make sure we have user permission to continue
+    if (NO == [self hasPermissions]) {
+        return nil;
+    }
+
     if (offset >= 0) {
         EKEventStore *eventStore = [[EKEventStore alloc] init];
         NSMutableSet *calendars = [self getAvailableCalendars:eventStore];
@@ -44,6 +50,11 @@
  * @date    1 Feb 2014
  */
 -(int)getCalendarCount{
+    //Make sure we have user permission to continue
+    if (NO == [self hasPermissions]) {
+        return 0;
+    }
+
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     NSMutableSet *calendars = [self getAvailableCalendars:eventStore];
     return calendars.count;
@@ -103,6 +114,12 @@
  * @date    1 Feb 2014
  */
 -(NSString*)openCalendar:(NSString*)calendarName param1:(BOOL)createIfNotExists{
+    
+    //Make sure we have user permission to continue
+    if (NO == [self hasPermissions]) {
+        return nil;
+    }
+    
     //calendarName can't be null or empty
     if (0 == [calendarName length]) {
         return nil;
@@ -143,6 +160,11 @@
  * @date    2 Feb 2014
  */
 -(NSString*)saveEvent:(NSString*)calendarID param1:(NSString*)eventID param2:(NSString*)title param3:(long long)startTimeStamp param4:(long long)endTimeStamp param5:(BOOL)allDayEvent param6:(BOOL)taskOnly param7:(NSString*)notes param8:(NSString*)location param9:(NSString*)reminders{
+    
+    //Make sure we have user permission to continue
+    if (NO == [self hasPermissions]) {
+        return nil;
+    }
     
     EKEventStore *eventStore = [[EKEventStore alloc] init];
     
@@ -254,6 +276,12 @@
  */
 -(BOOL)removeEvent:(NSString*)calendarID param1:(NSString*)eventID{
    
+    //Make sure we have user permission to continue
+    if (NO == [self hasPermissions]) {
+        return NO;
+    }
+
+
     //Make sure we have an eventID
     if (0 == [eventID length]) {
         return NO;
