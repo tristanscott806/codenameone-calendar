@@ -3,7 +3,7 @@
 @implementation com_codename1_calendar_impl_CalendarNativeInterfaceImpl
 
 /*
- * Traverse through all event sources available and enumerates accessible calendars
+ * Traverse through all event sources available and enumarates accissible calendars
  * from all of them. After that, returns the name of the calendar at the given offset
  *
  * @param   offset - Offset into the list of available calendars
@@ -36,10 +36,10 @@
 }
 
 /*
- * Traverse through all event sources available and counts accessible calendars
+ * Traverse through all event sources available and counts accissible calendars
  * from all of them
  *
- * return Total number of accessible calendars from all available event sources
+ * return Total number of accissible calendars from all available event sources
  * @author  Kapila de Lanerolle
  * @date    1 Feb 2014
  */
@@ -93,7 +93,7 @@
 }
 
 /*
- * Searches through available calendars to find the one with the given name. This function
+ * Seaches through available calendars to find the one with the given name. This function
  * just returns the calendarIdentifier of the first calendar that has the name provided.
  *
  * @param   calendarName - Name of the calendar
@@ -119,7 +119,7 @@
     //We haven't found a match.
     
     //TODO: The interface offers the options of creating a calendar by the given name in this case.
-    //Need to explore the possibility of this. We may need more info than the calendar name (like which event sorce we should use).
+    //Need to explore the possibility of this. We may need more info than the calender name (like which event sorce we should use).
     //Just return nil for now.
     
     return nil;
@@ -131,8 +131,8 @@
  * @param calendarID     - As returned from openCalendar. Pass null for default calendar
  * @param eventID        - Event Identifier. Pass null for new Events
  * @param title          - Title of the Calendar Event
- * @param startTimeStamp - Event starting time stamp (unix time)
- * @param endTimeStamp   - Event ending time stamp (unix time)
+ * @param startTimeStamp - Event starting time stamp (unix time) in milliseconds
+ * @param endTimeStamp   - Event ending time stamp (unix time) in milliseconds
  * @param allDayEvent    - The event is an all day event
  * @param taskOnly       - Task Only. No time associated with this.
  * @param notes          - Any notes for the event
@@ -182,8 +182,8 @@
     event.notes = notes;
     event.allDay = allDayEvent;
     if (!allDayEvent) {
-        NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)startTimeStamp];
-        NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)endTimeStamp];
+        NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)startTimeStamp/1000];
+        NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)endTimeStamp/1000];
         event.startDate = startDate;
         event.endDate = endDate;
     }
@@ -198,7 +198,7 @@
         }
     }
     
-    //Alarms are submitted as a string in CSV format. The alarm offsets must be
+    //Alarms are submitted as a stirng in CSV format. The alarm offsets must be
     //negative values. If not, they will be converted to a negative value before applying
     NSArray *reminderArray = [reminders componentsSeparatedByString:@","];
     for (NSString *str in reminderArray) {
@@ -248,7 +248,7 @@
  *
  * @param calendarID     - As returned from openCalendar. Pass null for default calendar.
  * @param eventID        - Event Identifier. Pass null for new Events
- * @return  Whether the event was successfully removed
+ * @return  Wheather the event was successfully removed
  * @author  Kapila de Lanerolle
  * @date    2 Feb 2014
  */
@@ -332,8 +332,8 @@
  * Searches events in the calendar with in the period specified
  *
  * @param calendarID        - As returned from openCalendar. Pass null for default calendar.
- * @param startTimeStamp    - Event search starting time stamp (unix time)
- * @param startTimeStamp    - Event search ending time stamp (unix time)
+ * @param startTimeStamp    - Event search starting time stamp (unix time) in milliseconds
+ * @param startTimeStamp    - Event search ending time stamp (unix time) in milliseconds
  * @return  XML String of event search details
  * @author  Kapila de Lanerolle
  * @date    2 Feb 2014
@@ -374,8 +374,8 @@
     }
 
     
-    NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)startTimeStamp];
-    NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)endTimeStamp];
+    NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)startTimeStamp/1000];
+    NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)endTimeStamp/1000];
     
     //Create the predicate;
     NSArray *calendarArray = [NSArray arrayWithObjects:calendar, nil];
@@ -423,7 +423,7 @@ Shouldn't be used directly by the class user.
 ******************************************************************************************************/
 
 /*
- * Traverse through all event sources available and enumerates all accessible calendars
+ * Traverse through all event sources available and enumarates all accissible calendars
  * from all of them
  *
  * return Set of EKCalendar objects. Note that the order or calendars returned is not consistant.
@@ -477,10 +477,10 @@ Shouldn't be used directly by the class user.
     [xmlString appendString:[NSString stringWithFormat:@"<title>%@</title>", event.title]];
     [xmlString appendString:[NSString stringWithFormat:@"<description>%@</description>", (nil != event.notes) ? event.notes : @""]];
     [xmlString appendString:[NSString stringWithFormat:@"<location>%@</location>", event.location]];
-    [xmlString appendString:[NSString stringWithFormat:@"<startTimeStamp>%u</startTimeStamp>", (int)[event.startDate timeIntervalSince1970]]];
-    [xmlString appendString:[NSString stringWithFormat:@"<endTimeStamp>%u</endTimeStamp>", (int)[event.endDate timeIntervalSince1970]]];
-    [xmlString appendString:[NSString stringWithFormat:@"<createdTimeStamp>%u</createdTimeStamp>", (int)[event.creationDate timeIntervalSince1970]]];
-    [xmlString appendString:[NSString stringWithFormat:@"<lastModifiedTimeStamp>%u</lastModifiedTimeStamp>", (int)[event.lastModifiedDate timeIntervalSince1970]]];
+    [xmlString appendString:[NSString stringWithFormat:@"<startTimeStamp>%lld</startTimeStamp>", (long long)[event.startDate timeIntervalSince1970]*1000]];
+    [xmlString appendString:[NSString stringWithFormat:@"<endTimeStamp>%lld</endTimeStamp>", (long long)[event.endDate timeIntervalSince1970]*1000]];
+    [xmlString appendString:[NSString stringWithFormat:@"<createdTimeStamp>%lld</createdTimeStamp>", (long long)[event.creationDate timeIntervalSince1970]*1000]];
+    [xmlString appendString:[NSString stringWithFormat:@"<lastModifiedTimeStamp>%lld</lastModifiedTimeStamp>", (long long)[event.lastModifiedDate timeIntervalSince1970]*1000]];
     [xmlString appendString:[NSString stringWithFormat:@"<allDayEvent>%@</allDayEvent>", event.allDay ? @"true" : @"false"]];
     
     NSArray *alarms = event.alarms;
