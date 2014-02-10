@@ -26,6 +26,7 @@ package com.codename1.calendar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Vector;
@@ -81,10 +82,16 @@ public final class DeviceCalendar implements CalendarInterface {
       return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).openCalendar(calendarName, createIfNotExists) : null;
    }
 
-   public String saveEvent(String calendarID, String eventID, String title, long startTimeStamp, long endTimeStamp, boolean allDayEvent, String notes, String location, Collection<Integer> reminders) {
+   public String saveEvent(String calendarID, String eventID, String title, Date startTime, Date endTime, boolean allDayEvent, String notes, String location, Collection<Integer> reminders) {
       if (calendarID == null || calendarID.length() == 0)
          throw new IllegalArgumentException("calendarID required");
+      
+      if (startTime == null)
+         throw new IllegalArgumentException("startTime cannot be null");
 
+      if (endTime == null)
+         throw new IllegalArgumentException("endTime cannot be null");
+      
       String sReminders;
             
       if (reminders != null && reminders.size() > 0) {
@@ -98,7 +105,7 @@ public final class DeviceCalendar implements CalendarInterface {
       else
          sReminders = null;
       
-      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTimeStamp, endTimeStamp, allDayEvent, false, notes, location, sReminders) : null;
+      return hasPermissions() ? ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).saveEvent(calendarID, eventID, title, startTime.getTime(), endTime.getTime(), allDayEvent, false, notes, location, sReminders) : null;
    }
 
    public boolean removeEvent(String calendarID, String eventID) {
@@ -131,12 +138,18 @@ public final class DeviceCalendar implements CalendarInterface {
       return null;
    }
 
-   public Collection<EventInfo> getEvents(String calendarID, long startTimeStamp, long endTimeStamp) {
+   public Collection<EventInfo> getEvents(String calendarID, Date startTime, Date endTime) {
       if (calendarID == null || calendarID.length() == 0)
          throw new IllegalArgumentException("calendarID required");
+      
+      if (startTime == null)
+         throw new IllegalArgumentException("startTime cannot be null");
+
+      if (endTime == null)
+         throw new IllegalArgumentException("endTime cannot be null");
 
       if (hasPermissions()) {
-         String      xml = ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEvents(calendarID, startTimeStamp, endTimeStamp);
+         String      xml = ((CalendarNativeInterface) NativeLookup.create(CalendarNativeInterface.class)).getEvents(calendarID, startTime.getTime(), endTime.getTime());
          Element element = new XMLParser().parse(new CharArrayReader(xml.toCharArray()));
 
 //         Log.p("events XML " + xml);
