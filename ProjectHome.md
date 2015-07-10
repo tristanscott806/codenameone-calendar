@@ -1,0 +1,1 @@
+Allows Codename One applications to use the device calendar, this project is packaged as a cn1lib and is maintained by the community.
